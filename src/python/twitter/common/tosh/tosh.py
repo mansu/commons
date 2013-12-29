@@ -1,13 +1,35 @@
 import sqlparse
 
 
+class Command:
+  "A tosh command."
+
+  def __init__(self, command_type, command, arguments):
+    self.command_type = command_type
+    self.command = command
+    self.arguments = arguments
+
+  def __str__(self):
+    return "Command type: %s, command: %s, arguments: %s" % \
+           (self.command_type, self.command, self.arguments)
+
 class CommandParser:
   "Command parser for tosh."
 
   def parse(self, command):
     result = sqlparse.parse(command)
-    stmt = result[0]
-    return self.extractTableName(stmt.tokens)
+    return self.getCommand(result[0].tokens)
+
+  def getCommand(self, tokens):
+    cmd_type = self.getCommandType(tokens[0])
+    cmd = self.extractTableName(tokens)
+    args = ''
+    return Command(cmd_type, cmd, args)
+
+  def getCommandType(self, token):
+    if ((token.is_keyword) and (token.value == 'select' or token.is_keyword == 'describe')):
+      return token.value
+    return ''
 
   # TODO: make this more robust
   def extractTableName(self, tokens):
@@ -34,7 +56,7 @@ class TableOrientedShell:
     while (1):
       command = raw_input('>')
       print "input is: " + command
-      print "output is: " + self.cmd_parser.parse(command)
+      print "output is: " + str(self.cmd_parser.parse(command))
 
 
 tosh = TableOrientedShell()
