@@ -1,9 +1,13 @@
 import sqlparse
 
-print("Hello")
-def hello():
-    print("Hello")
+print sqlparse.parse('select * from foo;')
 
-hello()
-print sqlparse.split('select * from foo; select * from bar;')
+def run():
+ while (1):
+   x = raw_input('>')
+   print "input is: " + x
 
+def start():
+  run()
+
+start()
